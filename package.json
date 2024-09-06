@@ -1,10 +1,10 @@
 {
   "name": "mediasoup-nest",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A real-time communication application leveraging Mediasoup within the Nest.js framework",
   "author": "Agung Dirgantara <agungmasda29@gmail.com>",
   "private": true,
-  "license": "UNLICENSED",
+  "license": "MIT",
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
