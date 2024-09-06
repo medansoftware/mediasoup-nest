@@ -1,12 +1,25 @@
+import os from 'node:os';
 import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { version } from 'mediasoup';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  getHello() {
+    const cpus = os.cpus();
+    const freeMemory = os.freemem();
+    const totalMemory = os.totalmem();
+    const usedMemory = totalMemory - freeMemory;
+
+    return {
+      timezone: process.env.TZ,
+      mediasoup: version,
+      CPU: cpus,
+      RAM: {
+        freeMemory,
+        usedMemory,
+        totalMemory,
+      },
+    };
   }
 }
