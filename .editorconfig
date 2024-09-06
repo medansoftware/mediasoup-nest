@@ -1,0 +1,23 @@
+# Author : Agung Dirgantara <agungmasda29@gmail.com>
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+charset = utf-8
+end_of_line = lf
+
+# Matches multiple files with brace expansion notation
+# Javascript / Typescript files
+[*.{js,ts}]
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+
+# JSON & YAML files
+[*.{json,yaml}]
+indent_size = 2
+indent_style = space
+insert_final_newline = false
