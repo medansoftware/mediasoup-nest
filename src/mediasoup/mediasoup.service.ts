@@ -222,11 +222,13 @@ export class MediasoupService {
    * Get router by worker PID
    * @param PID Worker PID
    */
-  getRouterByWorkerPID(PID: number): types.Router<RouterAppData>[] {
+  getRoutersByWorkerPID(PID: number): types.Router<RouterAppData>[] {
     if (this.getWorkerByPID(PID)) {
       const { routers } = this.resource;
       return routers.filter((router) => router.appData.workerPid === PID);
     }
+
+    throw new MediasoupException('WorkerNotFound');
   }
 
   /**
@@ -775,11 +777,11 @@ export class MediasoupService {
           resource as types.Consumer<ConsumerProducerAppData>,
         );
       } else if (resource instanceof types.Producer) {
-        const isExists = this.resource.producers.find(
+        const isExist = this.resource.producers.find(
           (producer) => producer.id === resource.id,
         );
 
-        if (!isExists) {
+        if (!isExist) {
           this.resource.producers.push(
             resource as types.Producer<ConsumerProducerAppData>,
           );
@@ -806,7 +808,7 @@ export class MediasoupService {
    * Remove from resource
    * @param resource Mediasoup resource
    */
-  async removeFromResouce(resource: MediasoupResourceType) {
+  async removeFromResource(resource: MediasoupResourceType) {
     const { workers, routers } = this.resource;
 
     await this.lock.acquire('resourceLock', async () => {
@@ -874,7 +876,7 @@ export class MediasoupService {
           count: worker.appData?.count,
         },
       });
-      this.removeFromResouce(worker);
+      this.removeFromResource(worker);
     });
 
     worker.on('subprocessclose', () => {
@@ -885,7 +887,7 @@ export class MediasoupService {
           count: worker.appData?.count,
         },
       });
-      this.removeFromResouce(worker);
+      this.removeFromResource(worker);
     });
 
     worker.observer.on('close', () => {
@@ -896,7 +898,7 @@ export class MediasoupService {
           count: worker.appData?.count,
         },
       });
-      this.removeFromResouce(worker);
+      this.removeFromResource(worker);
     });
 
     worker.observer.on('newwebrtcserver', (webRtcServer) => {
@@ -921,7 +923,7 @@ export class MediasoupService {
 
         // ? decrement router count for usage report
         this.workerUsageReport(worker.pid, 'decrement', 'router');
-        this.removeFromResouce(router);
+        this.removeFromResource(router);
       });
 
       // router event : opened
@@ -933,7 +935,7 @@ export class MediasoupService {
       router.observer.on('newrtpobserver', async (rtpObserver) => {
         // RTP observer closed
         rtpObserver.on('@close', () => {
-          this.removeFromResouce(rtpObserver);
+          this.removeFromResource(rtpObserver);
         });
 
         /**
@@ -1029,7 +1031,7 @@ export class MediasoupService {
           // ? decrement transport count for usage report
           this.workerUsageReport(worker.pid, 'decrement', 'transport');
           this.routerUsageReport(router.id, 'decrement', 'transport');
-          this.removeFromResouce(transport);
+          this.removeFromResource(transport);
         });
 
         // ? is webrtc transport
@@ -1099,7 +1101,7 @@ export class MediasoupService {
             // ? decrement consumer count for usage report
             this.workerUsageReport(worker.pid, 'decrement', 'consumer');
             this.routerUsageReport(router.id, 'decrement', 'consumer');
-            this.removeFromResouce(consumer);
+            this.removeFromResource(consumer);
           });
 
           consumer.on('producerpause', async () => {
@@ -1217,7 +1219,7 @@ export class MediasoupService {
             // ? increment decrement count for usage report
             this.workerUsageReport(worker.pid, 'decrement', 'producer');
             this.routerUsageReport(router.id, 'decrement', 'producer');
-            this.removeFromResouce(producer);
+            this.removeFromResource(producer);
           });
 
           producer.observer.on('pause', () => {
@@ -1370,6 +1372,9 @@ export class MediasoupService {
     }
   }
 
+  /**
+   * Automatically close disconnected transport
+   */
   @Cron('30 * * * * *', {
     name: 'CloseDisconnectedTransport',
   })

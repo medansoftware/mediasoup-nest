@@ -88,7 +88,7 @@ export class MediasoupController {
   getRoutersByWorker(
     @Param('pid', ParseIntPipe) pid: number,
   ): RouterAPIResponse[] {
-    const routers = this.mediasoupService.getRouterByWorkerPID(pid);
+    const routers = this.mediasoupService.getRoutersByWorkerPID(pid);
     return routers.map((router) => ({
       id: router.id,
       appData: router.appData,
