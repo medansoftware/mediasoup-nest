@@ -934,7 +934,7 @@ export class MediasoupService {
 
       router.observer.on('newrtpobserver', async (rtpObserver) => {
         // RTP observer closed
-        rtpObserver.on('@close', () => {
+        rtpObserver.on('routerclose', () => {
           this.removeFromResource(rtpObserver);
         });
 
