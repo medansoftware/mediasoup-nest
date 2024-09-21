@@ -1,9 +1,13 @@
 import os from 'node:os';
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Logger } from '@nestjs/common';
+import { OnEvent } from '@nestjs/event-emitter';
 import { version } from 'mediasoup';
+import { WorkerEvent, WorkerEventName } from './mediasoup/mediasoup.type';
 
 @Controller()
 export class AppController {
+  constructor(private readonly logger: Logger) {}
+
   @Get()
   getHello() {
     const cpus = os.cpus();
@@ -21,5 +25,15 @@ export class AppController {
         totalMemory,
       },
     };
+  }
+
+  @OnEvent(WorkerEventName.SubprocessClose)
+  workerSubprocessClosed(payload: WorkerEvent) {
+    this.logger.error('Worker subprocess closed', payload, AppController.name);
+  }
+
+  @OnEvent(WorkerEventName.Close)
+  workerClosed(payload: WorkerEvent) {
+    this.logger.error('Worker closed', payload, AppController.name);
   }
 }

@@ -41,10 +41,14 @@ export class MediasoupModule
 
   async onApplicationBootstrap() {
     this.logger.log(`Mediasoup version ${version}`);
-    const { workerCount } = this.mediasoupService.config();
+    const { workerCount, workerLogLevel, workerLogTags } =
+      this.mediasoupService.config();
 
     for (let i = 1; i <= workerCount; i = i + 1) {
-      const worker = await this.mediasoupService.createWorker();
+      const worker = await this.mediasoupService.createWorker({
+        logLevel: workerLogLevel,
+        logTags: workerLogTags,
+      });
 
       if (!worker.closed) {
         this.logger.log(`Worker opened [PID]: ${worker.pid}`);

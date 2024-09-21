@@ -2,6 +2,8 @@ import { types } from 'mediasoup';
 
 export type MediasoupConfig = {
   workerCount: number;
+  workerLogTags: types.WorkerLogTag[];
+  workerLogLevel: types.WorkerLogLevel;
   rtcMinPort: number;
   rtcMaxPort: number;
   listenIP: string;

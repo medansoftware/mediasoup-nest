@@ -130,6 +130,10 @@ export class MediasoupService {
     const { workers, currentWorker } = this.resource;
     const worker = workers[currentWorker];
 
+    if (!worker) {
+      throw new MediasoupException('WorkerNotFound');
+    }
+
     this.resource.currentWorker = (currentWorker + 1) % workers.length;
 
     return worker;
@@ -934,7 +938,7 @@ export class MediasoupService {
 
       router.observer.on('newrtpobserver', async (rtpObserver) => {
         // RTP observer closed
-        rtpObserver.on('@close', () => {
+        rtpObserver.on('routerclose', () => {
           this.removeFromResource(rtpObserver);
         });
 
