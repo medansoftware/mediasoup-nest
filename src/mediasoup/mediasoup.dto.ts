@@ -1,6 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
 import {
-  ArrayNotEmpty,
   IsArray,
   IsIn,
   IsNotEmpty,
@@ -11,12 +10,29 @@ import { types } from 'mediasoup';
 import { TransportType } from './mediasoup.type';
 
 export class WorkerCreateDto {
-  @IsNotEmpty()
   @IsIn(['debug', 'error', 'none', 'warn'])
+  @IsOptional()
   logLevel: types.WorkerLogLevel;
 
   @IsArray()
-  @ArrayNotEmpty()
+  @IsOptional()
+  @IsIn(
+    [
+      'ice',
+      'dtls',
+      'rtp',
+      'srtp',
+      'rtcp',
+      'rtx',
+      'bwe',
+      'score',
+      'simulcast',
+      'svc',
+      'sctp',
+      'message',
+    ],
+    { each: true },
+  )
   logTags: types.WorkerLogTag[];
 }
 

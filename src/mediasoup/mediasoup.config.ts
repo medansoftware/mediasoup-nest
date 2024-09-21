@@ -1,3 +1,4 @@
+import os from 'node:os';
 import { registerAs } from '@nestjs/config';
 import { types } from 'mediasoup';
 import { MediasoupConfig } from './mediasoup.type';
@@ -54,10 +55,23 @@ const listenIP = process.env.listenIP || '0.0.0.0';
 
 const anouncedIP = process.env.anouncedIP;
 
-const subProcessLimit = parseInt(process.env.subProcessLimit);
-
 const config: MediasoupConfig = {
-  workerCount: parseInt(process.env.workerCount) || 1,
+  workerCount: parseInt(process.env.workerCount) || os.cpus().length - 1,
+  workerLogTags: [
+    'ice',
+    'dtls',
+    'rtp',
+    'srtp',
+    'rtcp',
+    'rtx',
+    'bwe',
+    'score',
+    'simulcast',
+    'svc',
+    'sctp',
+    'message',
+  ],
+  workerLogLevel: 'debug',
   rtcMinPort: parseInt(process.env.rtcMinPort) || 10000,
   rtcMaxPort: parseInt(process.env.rtcMaxPort) || 60000,
   listenIP: process.env.listenIP || '0.0.0.0',
@@ -82,7 +96,7 @@ const config: MediasoupConfig = {
       ],
     },
   },
-  subProcessLimit: !isNaN(subProcessLimit) ? subProcessLimit : 500,
+  subProcessLimit: parseInt(process.env.subProcessLimit) || 500,
   transportOptions: {
     directTransportOptions: {
       maxMessageSize: 262144,
