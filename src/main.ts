@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import { readFile } from 'node:fs/promises';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
@@ -8,6 +9,13 @@ import { DEFAULT_VALIDATION_OPTIONS } from './app.config';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     abortOnError: false,
+    httpsOptions:
+      process.env.ENABLE_HTTPS === 'true'
+        ? {
+            key: await readFile(process.env.SSL_KEY_FILE),
+            cert: await readFile(process.env.SSL_CERT_FILE),
+          }
+        : undefined,
   });
 
   app.enableCors();
