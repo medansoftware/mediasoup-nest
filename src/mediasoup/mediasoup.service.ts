@@ -485,8 +485,9 @@ export class MediasoupService {
   async connectPlainTransport(
     transportId: string,
     options: {
-      ip: string;
-      port: number;
+      ip?: string;
+      port?: number;
+      rtcpPort?: number;
       srtpParameters?: types.SrtpParameters;
     },
   ): Promise<boolean> {
